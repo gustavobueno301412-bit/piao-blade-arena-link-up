@@ -22,9 +22,10 @@
             align-items: center;
             justify-content: space-between;
             height: 100vh;
+            height: 100dvh;
             overflow: hidden;
             touch-action: none;
-            padding: 4px 0;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
         /* Controles de Cima (P1 - Ponta Cabeça) */
@@ -34,10 +35,11 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 360px;
-            padding: 0 10px;
+            max-width: 400px;
+            padding: 2px 10px;
             opacity: 0.3;
             transition: opacity 0.3s;
+            flex-shrink: 0;
         }
 
         .controls-top.active {
@@ -48,26 +50,29 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            font-size: 0.65rem;
+            font-size: clamp(0.55rem, 2vw, 0.75rem);
             font-weight: bold;
             text-align: center;
-            margin: 1px 0;
+            margin: 2px 0;
+            flex-shrink: 0;
         }
 
         .status-bars {
             display: flex;
             gap: 10px;
-            font-size: 0.6rem;
+            font-size: clamp(0.5rem, 1.8vw, 0.65rem);
             margin-top: 2px;
         }
 
         .stamina-bar-container {
-            width: 80px;
+            width: 70px;
             height: 6px;
             background: #222;
             border-radius: 3px;
             overflow: hidden;
             border: 1px solid #444;
+            display: inline-block;
+            vertical-align: middle;
         }
 
         .stamina-fill {
@@ -80,8 +85,8 @@
         /* Arena no Centro */
         #game-container {
             position: relative;
-            width: 280px;
-            height: 280px;
+            width: min(72vw, 280px);
+            height: min(72vw, 280px);
             background: radial-gradient(circle, #15152b 0%, #080812 80%);
             border: 4px solid #333366;
             border-radius: 50%;
@@ -95,6 +100,8 @@
 
         canvas {
             display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .screen {
@@ -115,13 +122,13 @@
         }
 
         .screen h2 {
-            font-size: 1.1rem;
+            font-size: clamp(0.9rem, 3.5vw, 1.2rem);
             margin-bottom: 4px;
             color: #ffcc00;
         }
 
         .screen p {
-            font-size: 0.65rem;
+            font-size: clamp(0.55rem, 2vw, 0.7rem);
             color: #aaa;
             margin-bottom: 6px;
             max-width: 240px;
@@ -136,12 +143,12 @@
         }
 
         .emoji-option {
-            font-size: 18px;
+            font-size: 16px;
             background: #1f1f3a;
             border: 2px solid #333366;
             border-radius: 6px;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -154,14 +161,14 @@
         }
 
         .btn {
-            margin: 3px;
-            padding: 6px 14px;
+            margin: 2px;
+            padding: 5px 12px;
             background: linear-gradient(45deg, #00f3ff, #0066ff);
             color: #0b0b14;
             border: none;
             border-radius: 15px;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 2.2vw, 0.8rem);
             cursor: pointer;
         }
 
@@ -176,8 +183,9 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            max-width: 360px;
-            padding: 0 10px;
+            max-width: 400px;
+            padding: 2px 10px;
+            flex-shrink: 0;
         }
 
         .control-group {
@@ -188,17 +196,17 @@
 
         .control-row {
             display: flex;
-            gap: 8px;
+            gap: 6px;
         }
 
         .control-btn {
-            width: 60px;
-            height: 60px;
+            width: clamp(48px, 14vw, 60px);
+            height: clamp(48px, 14vw, 60px);
             background: #1f1f3a;
             color: #00f3ff;
             border: 2px solid #333366;
-            border-radius: 14px;
-            font-size: 26px;
+            border-radius: 12px;
+            font-size: clamp(20px, 6vw, 26px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -219,7 +227,7 @@
         <div class="control-group">
             <div style="font-size: 0.55rem; color: #ff0055; margin-bottom: 2px;">P1 (Cima)</div>
             <div class="control-btn" id="p1-up">⬆️</div>
-            <div class="control-row" style="margin: 3px 0;">
+            <div class="control-row" style="margin: 2px 0;">
                 <div class="control-btn" id="p1-left">⬅️</div>
                 <div class="control-btn" id="p1-down">⬇️</div>
                 <div class="control-btn" id="p1-right">➡️</div>
@@ -232,7 +240,7 @@
 
     <div id="scoreboard">
         <div><span id="phase-label" style="color: #ffcc00;">Fase: 1</span> | Status: <span id="match-status" style="color: #00f3ff;">Livre</span></div>
-        <div style="font-size: 0.55rem; color: #888; margin-top: 2px;">Recorde Fases: <span id="high-score">1</span></div>
+        <div style="font-size: 0.55rem; color: #888; margin-top: 1px;">Recorde Fases: <span id="high-score">1</span></div>
         <div class="status-bars">
             <div>P1 Estamina: <div class="stamina-bar-container"><div class="stamina-fill" id="stamina-p1-bar"></div></div></div>
             <div>P2 Estamina: <div class="stamina-bar-container"><div class="stamina-fill" id="stamina-p2-bar"></div></div></div>
@@ -246,7 +254,7 @@
         <div id="menu-screen" class="screen">
             <h2>Pião Blade Arena 🥏</h2>
             <p>Escolha o modo:</p>
-            <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+            <div style="display: flex; gap: 6px; margin-bottom: 4px;">
                 <button class="btn" onclick="setMode('cpu')">🤖 Campanha</button>
                 <button class="btn btn-p2" onclick="setMode('pvp')">👥 2 Jogadores</button>
             </div>
@@ -265,7 +273,7 @@
                 <div class="emoji-option" onclick="selectEmoji(2, '⚡')">⚡</div>
             </div>
            
-            <button class="btn" style="margin-top: 4px;" onclick="startGame()">Iniciar Batalha</button>
+            <button class="btn" style="margin-top: 2px;" onclick="startGame()">Iniciar Batalha</button>
         </div>
 
         <div id="gameover-screen" class="screen" style="display: none;">
@@ -280,7 +288,7 @@
         <div class="control-group">
             <div style="font-size: 0.55rem; color: #00ff66; margin-bottom: 2px;" id="p2-label-ui">CPU</div>
             <div class="control-btn" id="p2-up">⬆️</div>
-            <div class="control-row" style="margin: 3px 0;">
+            <div class="control-row" style="margin: 2px 0;">
                 <div class="control-btn" id="p2-left">⬅️</div>
                 <div class="control-btn" id="p2-down">⬇️</div>
                 <div class="control-btn" id="p2-right">➡️</div>
@@ -469,8 +477,8 @@
         function bindTouch(id, keyName) {
             const el = document.getElementById(id);
             if (!el) return;
-            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
-            el.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
+            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; }, { passive: false });
+            el.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; }, { passive: false });
             el.addEventListener('mousedown', () => { keys[keyName] = true; });
             el.addEventListener('mouseup', () => { keys[keyName] = false; });
         }
@@ -559,11 +567,9 @@
                     playSound('hit');
                     createSparks((p1.x + p2.x) / 2, (p1.y + p2.y) / 2, 6);
 
-                    // Calcula quem está com maior velocidade/inércia no impacto
                     let momP1 = Math.hypot(p1.vx, p1.vy);
                     let momP2 = Math.hypot(p2.vx, p2.vy);
 
-                    // Quem ataca (maior velocidade) tira mais energia do oponente
                     if (momP1 > momP2 + 0.3) {
                         p2.stamina -= 6 + (momP1 * 2);
                         p1.stamina -= 2;
@@ -571,7 +577,6 @@
                         p1.stamina -= 6 + (momP2 * 2);
                         p2.stamina -= 2;
                     } else {
-                        // Empate técnico de velocidade: dano leve igual
                         p1.stamina -= 3;
                         p2.stamina -= 3;
                     }
