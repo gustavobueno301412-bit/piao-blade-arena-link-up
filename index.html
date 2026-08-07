@@ -27,7 +27,7 @@
             padding: 2px 0;
         }
 
-        /* Controles de Cima (P1) */
+        /* Controles de Cima (P2 no modo PvP) */
         .controls-top {
             display: flex;
             justify-content: space-between;
@@ -35,13 +35,15 @@
             width: 100%;
             max-width: 360px;
             padding: 0 10px;
-            opacity: 0.3;
+            opacity: 0.2;
+            pointer-events: none;
             transition: opacity 0.3s;
             margin-top: 4px;
         }
 
         .controls-top.active {
             opacity: 1;
+            pointer-events: auto;
         }
 
         #scoreboard {
@@ -219,19 +221,19 @@
 </head>
 <body>
 
-    <!-- Controles de Cima (P1) -->
+    <!-- Controles de Cima (P2 no modo 2 Jogadores) -->
     <div class="controls-top" id="top-controls-wrapper">
         <div class="control-group">
-            <div style="font-size: 0.55rem; color: #ff0055; margin-bottom: 2px;">P1 (Cima)</div>
-            <div class="control-btn" id="p1-up">⬆️</div>
+            <div style="font-size: 0.55rem; color: #ff0055; margin-bottom: 2px;" id="p2-top-label">P2 (Cima)</div>
+            <div class="control-btn" id="p2-up">⬆️</div>
             <div class="control-row" style="margin: 2px 0;">
-                <div class="control-btn" id="p1-left">⬅️</div>
-                <div class="control-btn" id="p1-down">⬇️</div>
-                <div class="control-btn" id="p1-right">➡️</div>
+                <div class="control-btn" id="p2-left">⬅️</div>
+                <div class="control-btn" id="p2-down">⬇️</div>
+                <div class="control-btn" id="p2-right">➡️</div>
             </div>
         </div>
         <div style="font-size: 0.65rem; color: #ff0055; font-weight: bold;" id="battle-status-text">
-            Batalha Livre
+            P2 Arena
         </div>
     </div>
 
@@ -240,7 +242,7 @@
         <div style="font-size: 0.55rem; color: #888; margin-top: 1px;">Recorde Fases: <span id="high-score">1</span></div>
         <div class="status-bars">
             <div>P1 Estamina: <div class="stamina-bar-container"><div class="stamina-fill" id="stamina-p1-bar"></div></div></div>
-            <div>P2 Estamina: <div class="stamina-bar-container"><div class="stamina-fill" id="stamina-p2-bar"></div></div></div>
+            <div>P2/CPU Estamina: <div class="stamina-bar-container"><div class="stamina-fill" id="stamina-p2-bar"></div></div></div>
         </div>
     </div>
 
@@ -256,14 +258,14 @@
                 <button class="btn btn-p2" onclick="setMode('pvp')">👥 2 Jogadores</button>
             </div>
            
-            <p>Emoji P1 (Cima):</p>
+            <p>Emoji P1 (Baixo):</p>
             <div class="emoji-selector" id="selector-p1">
                 <div class="emoji-option selected" onclick="selectEmoji(1, '🐺')">🐺</div>
                 <div class="emoji-option" onclick="selectEmoji(1, '🐯')">🐯</div>
                 <div class="emoji-option" onclick="selectEmoji(1, '🔥')">🔥</div>
             </div>
 
-            <p id="p2-emoji-label">Emoji P2 (Baixo):</p>
+            <p id="p2-emoji-label">Emoji CPU / P2 (Cima):</p>
             <div class="emoji-selector" id="selector-p2">
                 <div class="emoji-option selected" onclick="selectEmoji(2, '🤖')">🤖</div>
                 <div class="emoji-option" onclick="selectEmoji(2, '🐲')">🐲</div>
@@ -280,19 +282,19 @@
         </div>
     </div>
 
-    <!-- Controles de Baixo (P2 / Normal) -->
+    <!-- Controles de Baixo (P1 / Seu Controle Principal) -->
     <div class="controls-bottom">
         <div class="control-group">
-            <div style="font-size: 0.55rem; color: #00ff66; margin-bottom: 2px;" id="p2-label-ui">CPU</div>
-            <div class="control-btn" id="p2-up">⬆️</div>
+            <div style="font-size: 0.55rem; color: #00ff66; margin-bottom: 2px;" id="p1-label-ui">P1 (Você)</div>
+            <div class="control-btn" id="p1-up">⬆️</div>
             <div class="control-row" style="margin: 2px 0;">
-                <div class="control-btn" id="p2-left">⬅️</div>
-                <div class="control-btn" id="p2-down">⬇️</div>
-                <div class="control-btn" id="p2-right">➡️</div>
+                <div class="control-btn" id="p1-left">⬅️</div>
+                <div class="control-btn" id="p1-down">⬇️</div>
+                <div class="control-btn" id="p1-right">➡️</div>
             </div>
         </div>
         <div style="font-size: 0.65rem; color: #00ff66; font-weight: bold;">
-            Arena Limpa
+            Arena P1
         </div>
     </div>
 
@@ -305,7 +307,7 @@
         const winnerTitle = document.getElementById('winner-title');
         const winnerDesc = document.getElementById('winner-desc');
         const topControlsWrapper = document.getElementById('top-controls-wrapper');
-        const p2LabelUi = document.getElementById('p2-label-ui');
+        const p1LabelUi = document.getElementById('p1-label-ui');
         const phaseLabel = document.getElementById('phase-label');
         const matchStatusEl = document.getElementById('match-status');
         const highScoreEl = document.getElementById('high-score');
@@ -324,15 +326,16 @@
 
         let isClashing = false;
 
+        // P1 agora começa embaixo e P2/CPU em cima
         let p1 = {
-            x: 95, y: 140, vx: 0, vy: 0,
-            radius: 20, emoji: '🦁',
+            x: 140, y: 185, vx: 0, vy: 0,
+            radius: 20, emoji: '🐺',
             accel: 0.35, maxSpeed: 4.2, friction: 0.985,
             stamina: 100
         };
 
         let p2 = {
-            x: 185, y: 140, vx: 0, vy: 0,
+            x: 140, y: 95, vx: 0, vy: 0,
             radius: 20, emoji: '🤖',
             accel: 0.35, maxSpeed: 4.2, friction: 0.985,
             stamina: 100
@@ -346,11 +349,11 @@
             gameMode = mode;
             if (mode === 'pvp') {
                 topControlsWrapper.classList.add('active');
-                p2LabelUi.textContent = "P2 (Baixo)";
+                p1LabelUi.textContent = "P1 (Baixo)";
                 phaseLabel.textContent = "Modo 2P";
             } else {
                 topControlsWrapper.classList.remove('active');
-                p2LabelUi.textContent = "CPU";
+                p1LabelUi.textContent = "P1 (Você)";
                 phaseLabel.textContent = `Fase ${currentPhase}`;
             }
         }
@@ -442,8 +445,8 @@
             matchStatusEl.textContent = "Livre";
             isClashing = false;
 
-            p1.x = 90; p1.y = 140; p1.vx = 0; p1.vy = 0; p1.stamina = 100;
-            p2.x = 190; p2.y = 140; p2.vx = 0; p2.vy = 0; p2.stamina = 100;
+            p1.x = 140; p1.y = 190; p1.vx = 0; p1.vy = 0; p1.stamina = 100;
+            p2.x = 140; p2.y = 90; p2.vx = 0; p2.vy = 0; p2.stamina = 100;
             sparks = [];
         }
 
@@ -466,7 +469,7 @@
                     currentPhase = Math.max(1, currentPhase - 1);
                 }
             } else {
-                winnerDesc.textContent = `${winner === 'p1' ? 'P1' : 'P2'} venceu por esvaziar a estamina!`;
+                winnerDesc.textContent = `${winner === 'p1' ? 'P1 (Baixo)' : 'P2 (Cima)'} venceu por esvaziar a estamina!`;
             }
             gameoverScreen.style.display = 'flex';
         }
@@ -492,11 +495,13 @@
             el.addEventListener('mouseleave', () => { keys[keyName] = false; });
         }
 
+        // Controles de Baixo (Sempre controlam o P1)
         bindTouch('p1-up', 'arrowup');
         bindTouch('p1-down', 'arrowdown');
         bindTouch('p1-left', 'arrowleft');
         bindTouch('p1-right', 'arrowright');
 
+        // Controles de Cima (Controlam o P2 apenas no modo PvP)
         bindTouch('p2-up', 'w');
         bindTouch('p2-down', 's');
         bindTouch('p2-left', 'a');
@@ -508,6 +513,7 @@
             let speedFactorP1 = 0.5 + (p1.stamina / 200);
             let speedFactorP2 = 0.5 + (p2.stamina / 200);
 
+            // P1 (baixo) respondendo às setas direcionais de baixo
             if (keys['arrowup']) p1.vy -= p1.accel * speedFactorP1;
             if (keys['arrowdown']) p1.vy += p1.accel * speedFactorP1;
             if (keys['arrowleft']) p1.vx -= p1.accel * speedFactorP1;
@@ -639,11 +645,11 @@
             ctx.arc(arenaCenter.x, arenaCenter.y, arenaRadius, 0, Math.PI * 2);
             ctx.stroke();
 
-            // Pião 1
+            // Pião 1 (Baixo)
             ctx.save();
             ctx.translate(p1.x, p1.y);
             ctx.rotate(Date.now() * 0.03);
-            ctx.fillStyle = '#ff0055';
+            ctx.fillStyle = '#00ff66';
             ctx.beginPath();
             ctx.arc(0, 0, p1.radius, 0, Math.PI * 2);
             ctx.fill();
@@ -657,11 +663,11 @@
             ctx.textBaseline = 'middle';
             ctx.fillText(p1.emoji, p1.x, p1.y);
 
-            // Pião 2
+            // Pião 2 (Cima)
             ctx.save();
             ctx.translate(p2.x, p2.y);
             ctx.rotate(-Date.now() * 0.03);
-            ctx.fillStyle = '#00ff66';
+            ctx.fillStyle = '#ff0055';
             ctx.beginPath();
             ctx.arc(0, 0, p2.radius, 0, Math.PI * 2);
             ctx.fill();
