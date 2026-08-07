@@ -28,9 +28,8 @@
             padding: 2px 0;
         }
 
-        /* Controles de Cima (P1 - Ponta Cabeça) */
+        /* Controles de Cima (P1) */
         .controls-top {
-            transform: rotate(180deg);
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -220,7 +219,7 @@
 </head>
 <body>
 
-    <!-- Controles de Cima (P1 - Ponta Cabeça) -->
+    <!-- Controles de Cima (P1) -->
     <div class="controls-top" id="top-controls-wrapper">
         <div class="control-group">
             <div style="font-size: 0.55rem; color: #ff0055; margin-bottom: 2px;">P1 (Cima)</div>
@@ -492,10 +491,11 @@
             el.addEventListener('mouseleave', () => { keys[keyName] = false; });
         }
 
-        bindTouch('p1-up', 'arrowup');
-        bindTouch('p1-down', 'arrowdown');
-        bindTouch('p1-left', 'arrowleft');
-        bindTouch('p1-right', 'arrowright');
+        /* P1 invertido logicamente para funcionar perfeitamente na parte superior */
+        bindTouch('p1-up', 'arrowdown');
+        bindTouch('p1-down', 'arrowup');
+        bindTouch('p1-left', 'arrowright');
+        bindTouch('p1-right', 'arrowleft');
 
         bindTouch('p2-up', 'w');
         bindTouch('p2-down', 's');
