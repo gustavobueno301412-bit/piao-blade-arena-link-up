@@ -209,6 +209,7 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+            touch-action: manipulation;
         }
 
         .control-btn:active {
@@ -474,10 +475,21 @@
         function bindTouch(id, keyName) {
             const el = document.getElementById(id);
             if (!el) return;
-            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; }, { passive: false });
-            el.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; }, { passive: false });
+            el.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                keys[keyName] = true;
+            }, { passive: false });
+            el.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                keys[keyName] = false;
+            }, { passive: false });
+            el.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                keys[keyName] = false;
+            }, { passive: false });
             el.addEventListener('mousedown', () => { keys[keyName] = true; });
             el.addEventListener('mouseup', () => { keys[keyName] = false; });
+            el.addEventListener('mouseleave', () => { keys[keyName] = false; });
         }
 
         bindTouch('p1-up', 'arrowup');
