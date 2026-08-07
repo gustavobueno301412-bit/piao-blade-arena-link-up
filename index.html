@@ -24,7 +24,6 @@
             height: 100vh;
             height: 100dvh;
             overflow: hidden;
-            touch-action: none;
             padding: 2px 0;
         }
 
@@ -209,6 +208,7 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .control-btn:active {
@@ -474,24 +474,23 @@
         function bindTouch(id, keyName) {
             const el = document.getElementById(id);
             if (!el) return;
-            el.addEventListener('touchstart', (e) => {
-                e.preventDefault();
+            el.addEventListener('pointerdown', (e) => {
                 keys[keyName] = true;
-            }, { passive: false });
-            el.addEventListener('touchend', (e) => {
-                e.preventDefault();
+                el.setPointerCapture(e.pointerId);
+            });
+            el.addEventListener('pointerup', (e) => {
                 keys[keyName] = false;
-            }, { passive: false });
-            el.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
+                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+            });
+            el.addEventListener('pointercancel', (e) => {
                 keys[keyName] = false;
-            }, { passive: false });
-            el.addEventListener('mousedown', () => { keys[keyName] = true; });
-            el.addEventListener('mouseup', () => { keys[keyName] = false; });
-            el.addEventListener('mouseleave', () => { keys[keyName] = false; });
+                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
+            });
+            el.addEventListener('pointerleave', () => {
+                keys[keyName] = false;
+            });
         }
 
-        /* P1 invertido logicamente para funcionar perfeitamente na parte superior */
         bindTouch('p1-up', 'arrowdown');
         bindTouch('p1-down', 'arrowup');
         bindTouch('p1-left', 'arrowright');
