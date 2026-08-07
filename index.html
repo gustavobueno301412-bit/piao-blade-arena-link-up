@@ -474,27 +474,28 @@
         function bindTouch(id, keyName) {
             const el = document.getElementById(id);
             if (!el) return;
-            el.addEventListener('pointerdown', (e) => {
+           
+            el.addEventListener('touchstart', (e) => {
                 keys[keyName] = true;
-                el.setPointerCapture(e.pointerId);
-            });
-            el.addEventListener('pointerup', (e) => {
+            }, { passive: true });
+           
+            el.addEventListener('touchend', (e) => {
                 keys[keyName] = false;
-                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
-            });
-            el.addEventListener('pointercancel', (e) => {
+            }, { passive: true });
+           
+            el.addEventListener('touchcancel', (e) => {
                 keys[keyName] = false;
-                try { el.releasePointerCapture(e.pointerId); } catch(err) {}
-            });
-            el.addEventListener('pointerleave', () => {
-                keys[keyName] = false;
-            });
+            }, { passive: true });
+
+            el.addEventListener('mousedown', () => { keys[keyName] = true; });
+            el.addEventListener('mouseup', () => { keys[keyName] = false; });
+            el.addEventListener('mouseleave', () => { keys[keyName] = false; });
         }
 
-        bindTouch('p1-up', 'arrowdown');
-        bindTouch('p1-down', 'arrowup');
-        bindTouch('p1-left', 'arrowright');
-        bindTouch('p1-right', 'arrowleft');
+        bindTouch('p1-up', 'arrowup');
+        bindTouch('p1-down', 'arrowdown');
+        bindTouch('p1-left', 'arrowleft');
+        bindTouch('p1-right', 'arrowright');
 
         bindTouch('p2-up', 'w');
         bindTouch('p2-down', 's');
